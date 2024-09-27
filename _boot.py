@@ -1,8 +1,6 @@
 import gc
 import os
 from flashbdev import bdev
-import brownout
-brownout.disable()
 import ssd1306fontFile
 
 try:
@@ -22,7 +20,7 @@ import brownout
 brownout.disable()
 oled.oled.displayclear()
 oled.oled.displaytxtauto('LeKit-V3', 24, 16)
-oled.oled.displaytxtauto('2024-6-19', 24, 32)
+oled.oled.displaytxtauto('2024-9-27', 24, 32)
 oled.oled.displayshow()
 """
     )

@@ -9,7 +9,7 @@ from pins_const import ports
 class ps2but(object):
 
     def __init__(self, port=None):
-        self.data = {'X': None, 'Y': None, 'Button': None}
+        self.data = {'X': 761, 'Y': 767, 'Button': 0}
         if port is None:
             print("请指定端口号")
 
@@ -20,17 +20,17 @@ class ps2but(object):
 
     def read(self):
         msg = ""
-        self.data = {'X': None, 'Y': None, 'Button': None}
-        self.uart.write(b'readdown')
-        time.sleep(1 / 10)
-        if self.uart.any():
-            msg = self.uart.readline().decode()
-        if msg == "":
-            return
+        self.data = {'X': 761, 'Y': 767, 'Button': 0}
         try:
+            self.uart.write(b'readdown')
+            time.sleep(1 / 10)
+            if self.uart.any():
+                msg = self.uart.readline().decode()
+            if msg == "":
+                return
             self.data = json.loads(msg)
         except Exception as e:
-            raise f'解析错误：{e}'
+            pass
 
     def getX(self):
         self.read()
@@ -42,4 +42,4 @@ class ps2but(object):
 
     def getBt(self):
         self.read()
-        return self.data['Button']
+        return 0 if self.data['Button'] else 1

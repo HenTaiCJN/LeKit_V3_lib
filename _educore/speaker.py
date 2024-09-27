@@ -17,8 +17,7 @@ class speaker:
 
         s_pin = Pin(self.pin, Pin.OUT)
 
-        self.pwm = PWM(s_pin)
-        self.pwm.duty(0)
+        self.pwm = PWM(s_pin, duty_u16=0)
 
     def tone(self, freq, durl=150, duty=512):
         self.is_stop = True
@@ -29,17 +28,16 @@ class speaker:
         self.is_stop = False
         if not isinstance(freq, list):
             freq = [freq]
-        self.pwm.duty(duty)
 
         for i in freq:
             if self.is_stop:
                 self.is_stop = False
                 break
             self.pwm.freq(i)
+            self.pwm.duty_u16(32768)
             time.sleep_ms(durl)
 
-        self.pwm.duty(0)
-        gc.collect()
+        self.pwm.duty_u16(0)
 
     def stop(self):
         self.is_stop = True

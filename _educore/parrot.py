@@ -1,18 +1,12 @@
+import time
+
 from machine import Pin, PWM
 
 from pins_const import ports
 
 
 def linear_map(x, in_min, in_max, out_min, out_max):
-    # Clamp the input value to the input range
-    if x < in_min:
-        x = in_min
-    elif x > in_max:
-        x = in_max
-
-    # Perform the linear mapping
-    result = (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-    return result
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 
 class parrot:
@@ -30,6 +24,7 @@ class parrot:
         self.motor_pin2 = None
         self.motor_pwm = None
         self.speed = None
+        self.speed_old = None
 
         self.init_external_motor()
 
@@ -55,8 +50,10 @@ class parrot:
             speed = 100
         elif speed < -100:
             speed = -100
-
+        if self.speed_old == speed:
+            return
         self.speed = speed
+        self.speed_old = speed
         self.updata_onboard()
 
     def updata_onboard(self):
@@ -64,10 +61,14 @@ class parrot:
         self.motor_pwm = PWM(self.motor_pin2, freq=50000)
         if self.speed > 0:
             self.motor_pin1.value(1)
-            mapped_value = linear_map(self.speed, 1, 100, 70, 96)
+            self.motor_pwm.duty(0)
+            time.sleep_ms(10)
+            mapped_value = linear_map(self.speed, 1, 100, 25, 96)
             self.motor_pwm.duty(int((100 - mapped_value) * 10.23))
         elif self.speed < 0:
             self.motor_pin1.value(0)
+            self.motor_pwm.duty(1023)
+            time.sleep_ms(10)
             mapped_value = linear_map(self.speed, -1, -100, -75, -100)
             self.motor_pwm.duty(int(-mapped_value * 10.23))
         else:

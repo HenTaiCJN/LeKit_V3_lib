@@ -1,6 +1,5 @@
 from machine import Pin
 
-from educore import pin
 from pins_const import ports
 
 
